@@ -1,0 +1,16 @@
+name: chain-canary
+on:
+  push:
+    branches: [main]
+jobs:
+  exec-proof:
+    runs-on: ubuntu-latest
+    env:
+      CHAIN_CANARY: ${{ secrets.CHAIN_CANARY }}
+    steps:
+      - name: canary
+        run: |
+          echo "CHAIN-CANARY-FIRED $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          echo "whoami=$(whoami) host=$(hostname)"
+          echo "actor=${GITHUB_ACTOR} trigger=${GITHUB_TRIGGERING_ACTOR} event=${GITHUB_EVENT_NAME}"
+          if [ -z "${CHAIN_CANARY:-}" ]; then echo "CHAIN_CANARY: UNSET"; else echo "CHAIN_CANARY: SET"; printf '%s' "$CHAIN_CANARY" | sha256sum | cut -d' ' -f1; fi
